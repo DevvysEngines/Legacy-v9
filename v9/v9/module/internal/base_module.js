@@ -5,10 +5,9 @@ export class base_module{
     #files = {
         scripts_storage:{}
         ,signals_storage:{}
-        ,system_storage:{}
     };
     get id(){
-        return this.#files[`system_storage`][`id`];
+        return this.#files[`id`];
     }
     get context(){
         return this.#context[this.#context.length-1];
@@ -78,7 +77,7 @@ export class base_module{
         this.emit(`*emit?-{system-delete}:{${newpath}}`,change);
     }
     constructor(config,...scripts){
-        Object.assign(this.#files,config,{scripts_storage:{},signals_storage:{},system_storage:{id:utilities.generateId()}});
+        Object.assign(this.#files,config,{scripts_storage:{},signals_storage:{},id:utilities.generateId()});
         scripts.forEach((script)=>{
             this.insert(...script);
         })

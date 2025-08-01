@@ -1,13 +1,6 @@
 import { utilities } from "../../utilities.js";
 
-function ctxUse(script,module,type){
-    return (...args)=>{
-        module.set_context(script);
-        let call = script.proto[type].call(module,...args);
-        module.remove_context();
-        return call;
-    }
-}
+
 
 export function script_handler(sCls){
     return class extends sCls {
@@ -18,7 +11,7 @@ export function script_handler(sCls){
                 ,active: true
                 ,proto: script
             }
-            stored_script.run = ctxUse(stored_script,this,`trigger`);
+            stored_script.run = utilities.ctxUse(stored_script,this,`trigger`);
             this.set(`scripts_storage/${stored_script.id}`,stored_script);
             this.set(`signals_storage/${stored_script.proto.signal}/${stored_script.id}`,true);
             return stored_script.id;
@@ -31,22 +24,19 @@ export function script_handler(sCls){
             return this.system_get([`scripts_storage`,id]);
         }
         emit(signal,...args){
-            console.log(
+            /*console.log(
                 `%cEmit from '%c${this.id}%c': %c${signal}`
                 ,"color: pink"
                 ,"color: yellow"
                 ,"color: pink"
                 ,"color: orange"
-            );
+            );*/
             let scripts = this.system_get([`signals_storage`,signal]);
             if (!scripts)return;
             Object.keys(scripts).forEach((id)=>{
                 let script = this.script(id);
                 if (!script.active)return;
-                let run = script.run(...args,...script.info);
-                if (typeof run == `object`){
-                    Object.assign(script,run);
-                }
+                script.run(...args,...script.info);
             })
         }
     }

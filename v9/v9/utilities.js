@@ -39,4 +39,13 @@ export class utilities {
     static system_signal_converter(signal=`/`,type=`set`){
         return `*emit?-{system-${type}}:{>${utilities.normalize_path(signal).join(`>`)}}*`;
     }
+    static ctxUse(script,module,type){
+        return (...args)=>{
+            module.set_context(script);
+            let call = script.proto[type].call(module,...args);
+            module.remove_context();
+            if (typeof call != `object`)return;
+            Object.assign(script,call);
+        }
+    }
 }
